@@ -28,7 +28,7 @@
     "watch": "npm-watch",
     "dev-mode": "npm-run-all --parallel server watch",
     "postinstall": "npm i -g live-server html-validate jshint",
-    "test": "mocha src/task1/script.js"
+    "test": "mocha src/tests.js"
   },
   "author": "Kalagin Ivan",
   "license": "ISC",
