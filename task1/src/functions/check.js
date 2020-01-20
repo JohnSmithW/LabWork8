@@ -13,6 +13,9 @@ function check(data, expectedType) {
   if (expectedType === 'string' && typeof data === 'string' && !!data) {
     return true;
   }
+  if (expectedType === 'undefined' && typeof data === 'undefined') {
+    return true;
+  }
   return false;
 }
 
