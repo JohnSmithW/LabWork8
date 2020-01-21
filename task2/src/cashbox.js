@@ -2,7 +2,7 @@
 
 var cashbox = {
   amount: 0,
-  history: [], // сохранять операции над кассой здесь
+  history: [],
   status: [],
   open: function(incomingCash) {
     if (typeof(incomingCash) == 'number' && incomingCash >= 0) {
@@ -12,8 +12,8 @@ var cashbox = {
     this.history.push('cashbox is open');
   },
   addPayment: function(payment = 0, info = '') {
-    this.history.push('payment added' + `(` + info + `)`);
-    if (typeof(payment) == 'number' && payment > 0 && this.status == 'open') {
+    if (typeof(payment) == 'number' && payment > 0 && this.status == 'open' && typeof(info) == 'string') {
+      this.history.push('payment added ' + payment + `(` + info + `)`);
       this.amount += payment;
       return ('cashbox amount = ' + this.amount);
     } else {
@@ -21,8 +21,8 @@ var cashbox = {
     }
   },
   refundPayment: function(refund = 0, info = '') {
-    this.history.push('payment refunded' + `(` + info + `)`);
-    if (typeof(refund) == 'number' && refund > 0 && this.amount > 0 && this.status == 'open') {
+    if (typeof(refund) == 'number' && refund > 0 && this.amount > 0 && this.status == 'open' && typeof(info) == 'string') {
+      this.history.push('payment refunded ' + refund + `(` + info + `)`);
       this.amount -= refund;
       return ('cashbox amount = ' + this.amount);
     } else {

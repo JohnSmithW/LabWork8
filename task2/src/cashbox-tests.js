@@ -30,42 +30,69 @@ describe('cashbox', function() {
     });
   });
   describe('addPayment', function() {
-    it('should set cashbox status on open and set the start value of amount', function() {
-
+    it('should add payment operation to the history', function() {
+      cashbox.addPayment(100);
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()']);
+      cashbox.addPayment(100, 'bills');
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      cashbox.addPayment(NaN);
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      cashbox.addPayment(undefined);
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      cashbox.addPayment(Object, 'bills');
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      cashbox.addPayment(100, 200);
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      cashbox.addPayment('100', 'bills');
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      cashbox.addPayment(500, undefined);
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)', 'payment added 500()']);
+    });
+    it('should add the payment value to amount', function() {
+      cashbox.addPayment(100);
+      assert.deepEqual(cashbox.amount, 800);
+      cashbox.addPayment(0);
+      assert.deepEqual(cashbox.amount, 800);
+      cashbox.addPayment();
+      assert.deepEqual(cashbox.amount, 800);
+      cashbox.addPayment(undefined);
+      assert.deepEqual(cashbox.amount, 800);
+      cashbox.addPayment(NaN);
+      assert.deepEqual(cashbox.amount, 800);
+      cashbox.addPayment('100');
+      assert.deepEqual(cashbox.amount, 800);
+      cashbox.addPayment(Object);
+      assert.deepEqual(cashbox.amount, 800);
+    });
+    it('should keep the current amount if the value of payment is negative', function() {
+      cashbox.addPayment(-100);
+      assert.deepEqual(cashbox.amount, 800);
+    });
+  });
+  describe('refundPayment', function() {
+    it('should add refund operation to the history', function() {
+      cashbox.refundPayment(100);
+      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)', 'payment added 500()', 'payment added 100()', 'payment refunded 100()']);
+    });
+    it('should subtract the refund value from amount', function() {
+      cashbox.refundPayment(100);
+      assert.deepEqual(cashbox.amount, 600);
+      cashbox.refundPayment(0);
+      assert.deepEqual(cashbox.amount, 600);
+      cashbox.refundPayment(0);
+      assert.deepEqual(cashbox.amount, 600);
+      cashbox.refundPayment(undefined);
+      assert.deepEqual(cashbox.amount, 600);
+      cashbox.refundPayment(NaN);
+      assert.deepEqual(cashbox.amount, 600);
+      cashbox.refundPayment('100');
+      assert.deepEqual(cashbox.amount, 600);
+      cashbox.refundPayment(Object);
+      assert.deepEqual(cashbox.amount, 600);
+    });
+    it('should keep the current amount if the value of refund is negative', function() {
+      cashbox.refundPayment(-100);
+      assert.deepEqual(cashbox.amount, 600);
     });
   });
 });
-
-
-
-
-
-/*
-var cashbox = {
-  amount: 0,
-  history: [], // сохранять операции над кассой здесь
-  status: [],
-  open: function(incomingCash) {
-    this.history.push('cashbox is open');
-    incomingCash = this.amount;
-    this.status = 'open';
-  },
-  addPayment: function(payment = 0, info = '') {
-    this.history.push('payment added' + `(` + info + `)`);
-    if (typeof(payment) == 'number' && payment > 0 && this.status == 'open') {
-      this.amount += payment;
-      return ('cashbox amount = ' + this.amount);
-    } else {
-      return ('error , amount have not changed');
-    }
-  },
-  refundPayment: function(refund = 0, info = '') {
-    this.history.push('payment refunded' + `(` + info + `)`);
-    if (typeof(refund) == 'number' && refund > 0 && this.amount > 0 && this.status == 'open') {
-      this.amount -= refund;
-      return ('cashbox amount = ' + this.amount);
-    } else {
-      return ('error , amount have not changed');
-    }
-  },
-};*/
