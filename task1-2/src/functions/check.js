@@ -16,6 +16,9 @@ function check(data, expectedType) {
   if (expectedType === 'undefined' && typeof data === 'undefined') {
     return true;
   }
+  if (expectedType === 'object' && typeof data === 'object') {
+    return true;
+  }
   return false;
 }
 
