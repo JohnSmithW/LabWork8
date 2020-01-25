@@ -146,22 +146,23 @@ describe('cashbox', function() {
   });
   describe('addPayment', function() {
     it('should add payment operation to the history', function() {
+      cashbox.history = [];
       cashbox.addPayment(100);
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()']);
+      assert.deepEqual(cashbox.history, ['payment added 100()']);
       cashbox.addPayment(100, 'bills');
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)']);
       cashbox.addPayment(NaN);
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)']);
       cashbox.addPayment(undefined);
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)']);
       cashbox.addPayment(Object, 'bills');
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)']);
       cashbox.addPayment(100, 200);
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)']);
       cashbox.addPayment('100', 'bills');
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)']);
       cashbox.addPayment(500, undefined);
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)', 'payment added 500()']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)', 'payment added 500()']);
     });
     it('should add the payment value to amount', function() {
       cashbox.addPayment(100);
@@ -187,7 +188,7 @@ describe('cashbox', function() {
   describe('refundPayment', function() {
     it('should add refund operation to the history', function() {
       cashbox.refundPayment(100);
-      assert.deepEqual(cashbox.history, ['cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'cashbox is open', 'payment added 100()', 'payment added 100(bills)', 'payment added 500()', 'payment added 100()', 'payment refunded 100()']);
+      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)', 'payment added 500()', 'payment added 100()', 'payment refunded 100()']);
     });
     it('should subtract the refund value from amount', function() {
       cashbox.refundPayment(100);
