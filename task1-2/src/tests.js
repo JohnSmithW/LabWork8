@@ -11,7 +11,7 @@ const cashbox = require('./functions/cashbox.js');
 
 var assert = require('assert');
 describe('replaceString', function() {
-  it('should return false if the value is null or not a string', function() {
+  it('should return false if the value is incorrect', function() {
     assert.equal(replaceString('', 'a', 'b'), false);
     assert.equal(replaceString('text', '', ''), false);
     assert.equal(replaceString(123, 'c', ''), false);
@@ -19,8 +19,13 @@ describe('replaceString', function() {
     assert.equal(replaceString(undefined, 'c', ''), false);
     assert.equal(replaceString(NaN, 'c', ''), false);
     assert.equal(replaceString('text', '', 'e'), false);
+  });
+  it('should return string with replaced letter or without letter if the value is empty', function() {
     assert.equal(replaceString('some text', 's', 'b'), 'bome text');
     assert.equal(replaceString('cart', 'c', ''), 'art');
+  });
+  it('should change all letters in string after replacement', function() {
+    assert.equal(replaceString('example of text', 'e', 'a'), 'axampla of taxt');
   });
 });
 
@@ -85,40 +90,88 @@ describe('check', function() {
     assert.equal(check(null, 'null'), true);
     assert.equal(check('test', 'string'), true);
     assert.equal(check(undefined, 'undefined'), true);
+    assert.equal(check(Object.prototype, 'object'), true);
   });
   it('should return false if value does not match the expected type', function() {
     assert.equal(check([], 'number'), false);
     assert.equal(check('', 'string'), false);
-    assert.equal(check(Object, 'object'), true);
+  });
+  it('should return false if value of expected type is incorrect', function() {
+    assert.equal(check([], null), false);
+    assert.equal(check('', []), false);
+    assert.equal(check([], []), false);
+    assert.equal(check('', ''), false);
+    assert.equal(check(Object, Object), false);
+    assert.equal(check(undefined, undefined), false);
+    assert.equal(check([], {}), false);
   });
 });
 
 
 describe('player', function() {
-  it('should change its statement depending on called functions', function() {
-    assert.deepEqual(player.trackList, ['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
-    player.play();
-    assert.equal(player.status, 'play');
-    player.pause();
-    assert.equal(player.status, 'pause');
-    assert.equal(player.currentTrack, player.currentTrack);
-    assert.equal(player.currentTrack, 0);
-    player.next();
-    assert.equal(player.currentTrack, 1);
-    player.prev();
-    assert.equal(player.currentTrack, 0);
-    player.next();
-    player.next();
-    player.next();
-    player.next();
-    assert.equal(player.currentTrack, 0);
-    player.prev();
-    assert.equal(player.currentTrack, 3);
+  describe('play', function() {
+    it('should set status on play', function() {
+      player.play();
+      assert.equal(player.status, 'play');
+    });
+  });
+
+
+  describe('pause', function() {
+    it('should set status on pause', function() {
+      player.pause();
+      assert.equal(player.status, 'pause');
+    });
+  });
+
+
+  describe('next', function() {
+    it('should switch to the next song in tracklist', function() {
+      player.next();
+      assert.equal(player.currentTrack, 1);
+    });
+    it('should switch to the first song in tracklist if the current track is the last one', function() {
+      player.next();
+      player.next();
+      player.next();
+      assert.equal(player.currentTrack, 0);
+    });
+  });
+
+
+  describe('prev', function() {
+    it('should switch to the previous song in tracklist', function() {
+      player.next();
+      player.prev();
+      assert.equal(player.currentTrack, 0);
+    });
+    it('should switch to the last song in tracklist if the current track is the first one', function() {
+      player.prev();
+      assert.equal(player.currentTrack, 3);
+    });
+  });
+
+
+  describe('tracklist', function() {
+    it('should display the tracklist', function() {
+      assert.deepEqual(player.trackList, ['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
+    });
+  });
+
+
+  describe('display', function() {
+    it('should display the current track and status', function() {
+      assert.deepEqual(player.display(), "Track: song4.mp3 Status: pause");
+    });
+    it('should display the message if the tracklist is empty', function() {
+      player.trackList = [];
+      assert.deepEqual(player.display(), "track you are looking for is not found");
+    });
   });
 });
 
 
-var assert = require('assert');
+
 describe('cashbox', function() {
   describe('open', function() {
     it('should set cashbox status on open and set the start value of amount', function() {
@@ -171,6 +224,12 @@ describe('cashbox', function() {
       assert.deepEqual(cashbox.amount, 800);
       cashbox.addPayment();
       assert.deepEqual(cashbox.amount, 800);
+    });
+    it('should keep the current amount if the value of payment is negative', function() {
+      cashbox.addPayment(-100);
+      assert.deepEqual(cashbox.amount, 800);
+    });
+    it('should keep the current amount if the value of payment is incorrect', function() {
       cashbox.addPayment(undefined);
       assert.deepEqual(cashbox.amount, 800);
       cashbox.addPayment(NaN);
@@ -180,9 +239,11 @@ describe('cashbox', function() {
       cashbox.addPayment(Object);
       assert.deepEqual(cashbox.amount, 800);
     });
-    it('should keep the current amount if the value of payment is negative', function() {
-      cashbox.addPayment(-100);
-      assert.deepEqual(cashbox.amount, 800);
+    it('should return a message if the value of payment is incorrect', function() {
+      assert.deepEqual(cashbox.addPayment(undefined), 'error , amount have not changed');
+      assert.deepEqual(cashbox.addPayment(NaN), 'error , amount have not changed');
+      assert.deepEqual(cashbox.addPayment('100'), 'error , amount have not changed');
+      assert.deepEqual(cashbox.addPayment(Object), 'error , amount have not changed');
     });
   });
   describe('refundPayment', function() {
@@ -209,6 +270,27 @@ describe('cashbox', function() {
     it('should keep the current amount if the value of refund is negative', function() {
       cashbox.refundPayment(-100);
       assert.deepEqual(cashbox.amount, 600);
+    });
+    it('should not subtract from amount if amount is 0', function() {
+      cashbox.amount = 0;
+      cashbox.refundPayment(-100);
+      assert.deepEqual(cashbox.amount, 0);
+    });
+    it('should keep the current amount if the value of refund is incorrect', function() {
+      cashbox.refundPayment(undefined);
+      assert.deepEqual(cashbox.amount, 0);
+      cashbox.refundPayment(NaN);
+      assert.deepEqual(cashbox.amount, 0);
+      cashbox.refundPayment('100');
+      assert.deepEqual(cashbox.amount, 0);
+      cashbox.refundPayment(Object);
+      assert.deepEqual(cashbox.amount, 0);
+    });
+    it('should return a message if the value of refund is incorrect', function() {
+      assert.deepEqual(cashbox.refundPayment(undefined), 'error , amount have not changed');
+      assert.deepEqual(cashbox.refundPayment(NaN), 'error , amount have not changed');
+      assert.deepEqual(cashbox.refundPayment('100'), 'error , amount have not changed');
+      assert.deepEqual(cashbox.refundPayment(Object), 'error , amount have not changed');
     });
   });
 });
