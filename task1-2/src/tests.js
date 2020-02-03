@@ -5,8 +5,8 @@ const isArrayEqual = require('./functions/isArrayEqual.js');
 const flatArray = require('./functions/flatArray.js');
 const isTimeRangesIntersect = require('./functions/isTimeRangesIntersect.js');
 const check = require('./functions/check.js');
-const player = require('./functions/player.js');
-const cashbox = require('./functions/cashbox.js');
+const Player = require('./functions/player.js');
+const Cashbox = require('./functions/cashbox.js');
 
 
 var assert = require('assert');
@@ -19,7 +19,16 @@ describe('replaceString', function() {
     assert.equal(replaceString(undefined, 'c', ''), false);
     assert.equal(replaceString(NaN, 'c', ''), false);
     assert.equal(replaceString('text', '', 'e'), false);
+    assert.equal(replaceString('text', 123, 'e'), false);
+    assert.equal(replaceString('text', null, 'e'), false);
+    assert.equal(replaceString('text', undefined, 'e'), false);
+    assert.equal(replaceString('text', NaN, 'e'), false);
+    assert.equal(replaceString('text', 't', 123), false);
+    assert.equal(replaceString('text', 't', null), false);
+    assert.equal(replaceString('text', 't', undefined), false);
+    assert.equal(replaceString('text', 't', NaN), false);
   });
+
   it('should return string with replaced letter or without letter if the value is empty', function() {
     assert.equal(replaceString('some text', 's', 'b'), 'bome text');
     assert.equal(replaceString('cart', 'c', ''), 'art');
@@ -33,11 +42,15 @@ describe('replaceString', function() {
 describe('isArrayEqual', function() {
   it('should return false if the first array is not equal to the second', function() {
     assert.equal(isArrayEqual([], null), false);
-    assert.equal(isArrayEqual([], []), true);
     assert.equal(isArrayEqual([], ['test']), false);
-    assert.equal(isArrayEqual([1, 2, 3], [1, 2, 3]), true);
     assert.equal(isArrayEqual([1, null, 3], [1, undefined, 3]), false);
     assert.equal(isArrayEqual([false, null], [true, null]), false);
+  });
+  it('should return true if arrays equal', function() {
+    assert.equal(isArrayEqual([], []), true);
+    assert.equal(isArrayEqual([1, 2, 3], [1, 2, 3]), true);
+    assert.equal(isArrayEqual(['test'], ['test']), true);
+    assert.equal(isArrayEqual([undefined], [undefined]), true);
   });
 });
 
@@ -81,6 +94,9 @@ describe('isTimeRangesIntersect', function() {
     assert.deepEqual(isTimeRangesIntersect(['0830', '09:30'], ['10:30', '12:00']), false);
     assert.deepEqual(isTimeRangesIntersect(['08-30', '09:30'], ['10:30', '12:00']), false);
   });
+  it('should return true if the ranges are equal', function() {
+    assert.deepEqual(isTimeRangesIntersect(['18:30', '19:30'], ['18:30', '19:30']), true);
+  });
 });
 
 
@@ -106,6 +122,9 @@ describe('check', function() {
     assert.equal(check([], {}), false);
   });
 });
+
+
+var player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
 
 
 describe('player', function() {
@@ -170,6 +189,8 @@ describe('player', function() {
   });
 });
 
+
+var cashbox = new Cashbox([]);
 
 
 describe('cashbox', function() {

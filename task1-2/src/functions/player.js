@@ -29,7 +29,7 @@ function Player(tracklist) {
     }
 }
 
-var player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
 
 
-module.exports = player;
+
+module.exports = Player;
