@@ -1,5 +1,6 @@
 'use strict';
 
+
 const replaceString = require('./functions/replaceString.js');
 const isArrayEqual = require('./functions/isArrayEqual.js');
 const flatArray = require('./functions/flatArray.js');
@@ -124,11 +125,20 @@ describe('check', function() {
 });
 
 
-var player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
+
 
 
 describe('player', function() {
   describe('play', function() {
+    const player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
+    it('should set status on play', function() {
+      player.play();
+      assert.equal(player.status, 'play');
+    });
+  });
+
+  describe('play(empty tracklist)', function() {
+    const player = new Player([]);
     it('should set status on play', function() {
       player.play();
       assert.equal(player.status, 'play');
@@ -137,6 +147,15 @@ describe('player', function() {
 
 
   describe('pause', function() {
+    const player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
+    it('should set status on pause', function() {
+      player.pause();
+      assert.equal(player.status, 'pause');
+    });
+  });
+
+  describe('pause(empty tracklist)', function() {
+    const player = new Player([]);
     it('should set status on pause', function() {
       player.pause();
       assert.equal(player.status, 'pause');
@@ -145,6 +164,7 @@ describe('player', function() {
 
 
   describe('next', function() {
+    const player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
     it('should switch to the next song in tracklist', function() {
       player.next();
       assert.equal(player.currentTrack, 1);
@@ -157,8 +177,17 @@ describe('player', function() {
     });
   });
 
+  describe('next(empty tracklicst)', function() {
+    const player = new Player([]);
+    it('should keep the track on position 0', function() {
+      player.next();
+      assert.equal(player.currentTrack, 0);
+    });
+  });
+
 
   describe('prev', function() {
+    const player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
     it('should switch to the previous song in tracklist', function() {
       player.next();
       player.prev();
@@ -170,31 +199,57 @@ describe('player', function() {
     });
   });
 
+  describe('prev(empty tracklist)', function() {
+    const player = new Player([]);
+    it('should keep the track on position 0', function() {
+      player.prev();
+      assert.equal(player.currentTrack, 0);
+    });
+  });
+
 
   describe('tracklist', function() {
+    const player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
     it('should display the tracklist', function() {
       assert.deepEqual(player.trackList, ['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
     });
   });
 
+  describe('tracklist(empty tracklist)', function() {
+    const player = new Player([]);
+    it('should display the empty tracklist', function() {
+      assert.deepEqual(player.trackList, []);
+    });
+  });
+
+
 
   describe('display', function() {
+    const player = new Player(['song.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3']);
     it('should display the current track and status', function() {
-      assert.deepEqual(player.display(), "Track: song4.mp3 Status: pause");
+      assert.deepEqual(player.display(), 'Track: song.mp3 Status: pause');
     });
     it('should display the message if the tracklist is empty', function() {
       player.trackList = [];
-      assert.deepEqual(player.display(), "track you are looking for is not found");
+      assert.deepEqual(player.display(), 'track you are looking for is not found');
+    });
+  });
+
+  describe('display(empty tracklist)', function() {
+    const player = new Player([]);
+    it('should display the message', function() {
+      assert.deepEqual(player.display(), 'track you are looking for is not found');
     });
   });
 });
 
 
-var cashbox = new Cashbox([]);
+
 
 
 describe('cashbox', function() {
   describe('open', function() {
+    const cashbox = new Cashbox([]);
     it('should set cashbox status on open and set the start value of amount', function() {
       cashbox.open();
       assert.equal(cashbox.status, 'open');
@@ -219,7 +274,9 @@ describe('cashbox', function() {
     });
   });
   describe('addPayment', function() {
+    const cashbox = new Cashbox([]);
     it('should add payment operation to the history', function() {
+      cashbox.open();
       cashbox.history = [];
       cashbox.addPayment(100);
       assert.deepEqual(cashbox.history, ['payment added 100()']);
@@ -268,32 +325,33 @@ describe('cashbox', function() {
     });
   });
   describe('refundPayment', function() {
+    const cashbox = new Cashbox([]);
     it('should add refund operation to the history', function() {
+      cashbox.open();
+      cashbox.history = [];
+      cashbox.addPayment(200);
       cashbox.refundPayment(100);
-      assert.deepEqual(cashbox.history, ['payment added 100()', 'payment added 100(bills)', 'payment added 500()', 'payment added 100()', 'payment refunded 100()']);
+      assert.deepEqual(cashbox.history, ['payment added 200()', 'payment refunded 100()']);
     });
     it('should subtract the refund value from amount', function() {
       cashbox.refundPayment(100);
-      assert.deepEqual(cashbox.amount, 600);
+      assert.deepEqual(cashbox.amount, 0);
       cashbox.refundPayment(0);
-      assert.deepEqual(cashbox.amount, 600);
-      cashbox.refundPayment(0);
-      assert.deepEqual(cashbox.amount, 600);
+      assert.deepEqual(cashbox.amount, 0);
       cashbox.refundPayment(undefined);
-      assert.deepEqual(cashbox.amount, 600);
+      assert.deepEqual(cashbox.amount, 0);
       cashbox.refundPayment(NaN);
-      assert.deepEqual(cashbox.amount, 600);
+      assert.deepEqual(cashbox.amount, 0);
       cashbox.refundPayment('100');
-      assert.deepEqual(cashbox.amount, 600);
+      assert.deepEqual(cashbox.amount, 0);
       cashbox.refundPayment(Object);
-      assert.deepEqual(cashbox.amount, 600);
+      assert.deepEqual(cashbox.amount, 0);
     });
     it('should keep the current amount if the value of refund is negative', function() {
       cashbox.refundPayment(-100);
-      assert.deepEqual(cashbox.amount, 600);
+      assert.deepEqual(cashbox.amount, 0);
     });
     it('should not subtract from amount if amount is 0', function() {
-      cashbox.amount = 0;
       cashbox.refundPayment(-100);
       assert.deepEqual(cashbox.amount, 0);
     });

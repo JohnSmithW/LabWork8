@@ -23,10 +23,10 @@ function Player(tracklist) {
     },
     this.prev = function() {
       this.currentTrack = (this.currentTrack - 1);
-      if (this.currentTrack < 0) {
+      if (this.currentTrack < 0 && this.trackList.length > 1) {
         this.currentTrack = this.trackList.length - 1;
-      }
-    }
+      } else { this.currentTrack = 0; }
+    };
 }
 
 
