@@ -249,7 +249,7 @@ describe('player', function() {
 
 describe('cashbox', function() {
   describe('open', function() {
-    const cashbox = new Cashbox([]);
+    const cashbox = new Cashbox();
     it('should set cashbox status on open and set the start value of amount', function() {
       cashbox.open();
       assert.equal(cashbox.status, 'open');
@@ -274,7 +274,7 @@ describe('cashbox', function() {
     });
   });
   describe('addPayment', function() {
-    const cashbox = new Cashbox([]);
+    const cashbox = new Cashbox();
     it('should add payment operation to the history', function() {
       cashbox.open();
       cashbox.history = [];
@@ -325,7 +325,7 @@ describe('cashbox', function() {
     });
   });
   describe('refundPayment', function() {
-    const cashbox = new Cashbox([]);
+    const cashbox = new Cashbox();
     it('should add refund operation to the history', function() {
       cashbox.open();
       cashbox.history = [];
